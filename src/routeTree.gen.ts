@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BuyerRouteImport } from './routes/buyer'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as BuyerRequestRouteImport } from './routes/buyer_.request'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BuyerRequestRoute = BuyerRequestRouteImport.update({
+  id: '/buyer_/request',
+  path: '/buyer/request',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/buyer': typeof BuyerRoute
   '/login': typeof LoginRoute
+  '/buyer/request': typeof BuyerRequestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/buyer': typeof BuyerRoute
   '/login': typeof LoginRoute
+  '/buyer/request': typeof BuyerRequestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/buyer': typeof BuyerRoute
   '/login': typeof LoginRoute
+  '/buyer_/request': typeof BuyerRequestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/buyer' | '/login'
+  fullPaths: '/' | '/buyer' | '/login' | '/buyer/request'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/buyer' | '/login'
-  id: '__root__' | '/' | '/buyer' | '/login'
+  to: '/' | '/buyer' | '/login' | '/buyer/request'
+  id: '__root__' | '/' | '/buyer' | '/login' | '/buyer_/request'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BuyerRoute: typeof BuyerRoute
   LoginRoute: typeof LoginRoute
+  BuyerRequestRoute: typeof BuyerRequestRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/buyer_/request': {
+      id: '/buyer_/request'
+      path: '/buyer/request'
+      fullPath: '/buyer/request'
+      preLoaderRoute: typeof BuyerRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BuyerRoute: BuyerRoute,
   LoginRoute: LoginRoute,
+  BuyerRequestRoute: BuyerRequestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
