@@ -1,12 +1,18 @@
-import { Link } from "@tanstack/react-router";
-import { Leaf, ShoppingCart, Sprout, Truck } from "lucide-react";
+import { Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { Leaf, LogOut, ShoppingCart, Sprout, Truck } from "lucide-react";
 import type { ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { DASHBOARD_PATH, ROLE_LABEL, displayName, useProfile } from "@/lib/auth";
 
-const NAV = [
-  { to: "/farmer", label: "Farmer / FPO", icon: Sprout },
-  { to: "/buyer", label: "Buyer", icon: ShoppingCart },
-  { to: "/transporter", label: "Transporter", icon: Truck },
-] as const;
+const ROLE_NAV = {
+  farmer: [{ to: DASHBOARD_PATH.farmer, label: "Farmer / FPO", icon: Sprout }],
+  buyer: [
+    { to: DASHBOARD_PATH.buyer, label: "Dashboard", icon: ShoppingCart },
+    { to: "/buyer/request", label: "New request", icon: Leaf },
+  ],
+  transporter: [{ to: DASHBOARD_PATH.transporter, label: "Transporter", icon: Truck }],
+} as const;
 
 export function AppShell({
   title,
@@ -19,6 +25,20 @@ export function AppShell({
   actions?: ReactNode;
   children: ReactNode;
 }) {
+  const { data: profile } = useProfile();
+  const navigate = useNavigate();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const nav = profile ? ROLE_NAV[profile.role] : [];
+
+  async function signOut() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    await router.invalidate();
+    navigate({ to: "/auth", replace: true });
+  }
+
   return (
     <div className="min-h-screen bg-surface">
       <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
@@ -30,7 +50,7 @@ export function AppShell({
             Agri Connect
           </Link>
           <nav className="ml-auto flex items-center gap-1">
-            {NAV.map((n) => (
+            {nav.map((n) => (
               <Link
                 key={n.to}
                 to={n.to}
@@ -41,6 +61,21 @@ export function AppShell({
                 <span className="hidden sm:inline">{n.label}</span>
               </Link>
             ))}
+            {profile ? (
+              <div className="ml-2 flex items-center gap-2 border-l border-border pl-3">
+                <div className="hidden text-right sm:block">
+                  <p className="text-sm font-medium leading-tight">{displayName(profile)}</p>
+                  <p className="text-xs text-muted-foreground">{ROLE_LABEL[profile.role]}</p>
+                </div>
+                <button
+                  onClick={signOut}
+                  aria-label="Sign out"
+                  className="flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                >
+                  <LogOut className="size-4" />
+                </button>
+              </div>
+            ) : null}
           </nav>
         </div>
       </header>
@@ -48,9 +83,7 @@ export function AppShell({
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
-            {subtitle ? (
-              <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
-            ) : null}
+            {subtitle ? <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p> : null}
           </div>
           {actions}
         </div>
