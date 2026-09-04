@@ -14,16 +14,132 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      orders: {
+        Row: {
+          buyer_id: string
+          buyer_name: string
+          code: string
+          created_at: string
+          destination: Json
+          farmer_responses: Json
+          id: string
+          items: Json
+          logistics: Json | null
+          matches: Json
+          required_date: string
+          transport_status: string
+          transporter_id: string | null
+        }
+        Insert: {
+          buyer_id: string
+          buyer_name?: string
+          code: string
+          created_at?: string
+          destination: Json
+          farmer_responses?: Json
+          id?: string
+          items: Json
+          logistics?: Json | null
+          matches: Json
+          required_date: string
+          transport_status?: string
+          transporter_id?: string | null
+        }
+        Update: {
+          buyer_id?: string
+          buyer_name?: string
+          code?: string
+          created_at?: string
+          destination?: Json
+          farmer_responses?: Json
+          id?: string
+          items?: Json
+          logistics?: Json | null
+          matches?: Json
+          required_date?: string
+          transport_status?: string
+          transporter_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          billing_address: string | null
+          business_email: string | null
+          capacity_tons: number | null
+          company_name: string | null
+          created_at: string
+          full_name: string
+          gst_id: string | null
+          id: string
+          phone: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          vehicle_type: string | null
+          village: string | null
+        }
+        Insert: {
+          billing_address?: string | null
+          business_email?: string | null
+          capacity_tons?: number | null
+          company_name?: string | null
+          created_at?: string
+          full_name?: string
+          gst_id?: string | null
+          id: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          vehicle_type?: string | null
+          village?: string | null
+        }
+        Update: {
+          billing_address?: string | null
+          business_email?: string | null
+          capacity_tons?: number | null
+          company_name?: string | null
+          created_at?: string
+          full_name?: string
+          gst_id?: string | null
+          id?: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          vehicle_type?: string | null
+          village?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "farmer" | "buyer" | "transporter"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +266,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["farmer", "buyer", "transporter"],
+    },
   },
 } as const
